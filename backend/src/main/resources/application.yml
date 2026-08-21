@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: agrolink-backend
+
+server:
+  port: ${PORT:8080}
+
+cognodb:
+  uri: ${COGNODB_URI}
+  username: ${COGNODB_USERNAME}
+  password: ${COGNODB_PASSWORD}
+  database: ${COGNODB_DATABASE:neo4j}
