@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: agrolink
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: COGNODB_URI
+        sync: false
+      - key: COGNODB_USERNAME
+        sync: false
+      - key: COGNODB_PASSWORD
+        sync: false
+      - key: COGNODB_DATABASE
+        value: neo4j
+      - key: PORT
+        value: 8080
