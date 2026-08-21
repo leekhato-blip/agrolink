@@ -18,14 +18,14 @@ In an RDBMS, answering **"Which farms share a feed supplier with Farm Alpha?"** 
 ### The Graph (Cypher) Solution
 With **CognoDB / Neo4j** and **openCypher**, relationships are first-class entities stored as direct pointers between nodes. 
 
-* **Index-Free Adjacency**: Traversing a relationship is an $O(1)$ memory pointer dereference, independent of total database size.
-* **Declarative Path Traversals**: Complex 3-hop or variable-depth paths are expressed concisely:
+* **Index-Free Adjacency**: Traversing a relationship follows a direct pointer, providing constant‑time performance in practice.
+* **Declarative Path Traversals**: Complex 3‑hop or variable‑depth paths are expressed concisely.
   ```cypher
   // Multi-hop path traversal in 1 line
   MATCH (s:Supplier {id: $supplierId})-[:SUPPLIES]->(:Feed)<-[:CONSUMES]-(:Livestock)<-[:HAS_LIVESTOCK]-(f:Farm)
   RETURN f
   ```
-* **Real-time Impact Analysis**: Operational blast radius calculations evaluate connected downstream risks instantaneously.
+* **Real‑time Impact Analysis**: Operational blast‑radius calculations evaluate connected downstream risks instantly.
 
 ---
 
@@ -137,11 +137,11 @@ The repository includes a repeatable seed script (`seed/seed.cypher`) that creat
   RETURN DISTINCT supplier.id AS id, supplier.name AS name
   ```
 
-### 4. Shared Suppliers Traversal (6-Hop Cross-Farm Risk)
+### 4. Shared Suppliers Traversal (Multi‑Hop Cross‑Farm Risk)
 * **Goal**: Find farms that share a feed supplier with a target farm.
 * **Cypher Query**:
   ```cypher
-  MATCH (farm:Farm {id: $farmId})-[:HAS_LIVESTOCK|HAS_POND]->()-[:CONSUMES]->(feed:Feed)<-[:SUPPLIES]-(supplier:Supplier)
+  MATCH (farm:Farm {id: $farmId})-[:HAS_LIVESTOCK|HAS_POND]->()<-[:CONSUMES]-(feed:Feed)<-[:SUPPLIES]-(supplier:Supplier)
   MATCH (supplier)-[:SUPPLIES]->(peerFeed:Feed)<-[:CONSUMES]-()<-[:HAS_LIVESTOCK|HAS_POND]-(peerFarm:Farm)
   WHERE peerFarm.id <> farm.id
   RETURN DISTINCT peerFarm.id AS id, peerFarm.name AS name
@@ -149,7 +149,7 @@ The repository includes a repeatable seed script (`seed/seed.cypher`) that creat
 
 ### 5. Farm Ecosystem Traversal (Relationally Awkward Variable-Length Path Query)
 * **Goal**: Explore all entities connected to a farm within $N$ hops ($1 \le N \le 4$).
-* **Why Relationally Awkward?**: In SQL, querying variable-length paths of unknown depth requires recursive CTEs and multiple outer joins across 5 junction tables. In Cypher, it is a single declarative expression:
+* **Why Relationally Awkward?**: In SQL, querying variable‑length paths of unknown depth requires recursive CTEs and multiple outer joins across several tables. In Cypher, it is a single declarative expression:
 * **Cypher Query**:
   ```cypher
   MATCH p=(farm:Farm {id: $farmId})-[*1..4]-(other)
